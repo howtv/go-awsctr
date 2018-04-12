@@ -6,6 +6,13 @@ go-awsctr is the package which is intended to make daily aws operation easy
 
 `go get github.com/howtv/go-awsctr/cmd/awsctr`
 
+## `awsctr logs list`
+
+list log groups
+
+```
+awsctr logs list
+```
 
 ## `awsctr logs watch`
 
