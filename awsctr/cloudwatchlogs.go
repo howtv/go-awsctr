@@ -13,14 +13,16 @@ const (
 	logStreamOrderEventTime  = "LastEventTime"
 	logStreamOrderStreamName = "logStreamName"
 
-	getLogEventsLimit = 10000
-	logStreamBuffer   = 100
+	getLogEventsLimit      = 10000
+	describeLogGroupsLimit = 50
+	logStreamBuffer        = 100
 )
 
 // CloudWatchLogs -
 type CloudWatchLogs interface {
 	FetchLatestStream(logGroupName string) (*cloudwatchlogs.LogStream, error)
 	OpenLogStream(ctx context.Context, logGroupName, logStreamName string, interval time.Duration) (<-chan *cloudwatchlogs.OutputLogEvent, <-chan error)
+	ListLogGroups() ([]string, error)
 }
 
 // NewCloudWatchLogs -
@@ -37,6 +39,7 @@ func NewCloudWatchLogs(region string) (CloudWatchLogs, error) {
 type cloudWatchLogsService interface {
 	DescribeLogStreams(*cloudwatchlogs.DescribeLogStreamsInput) (*cloudwatchlogs.DescribeLogStreamsOutput, error)
 	GetLogEvents(*cloudwatchlogs.GetLogEventsInput) (*cloudwatchlogs.GetLogEventsOutput, error)
+	DescribeLogGroups(*cloudwatchlogs.DescribeLogGroupsInput) (*cloudwatchlogs.DescribeLogGroupsOutput, error)
 }
 
 type cloudWatchLogs struct {
@@ -133,6 +136,7 @@ func (c *cloudWatchLogs) openLogStream(
 	}
 }
 
+// OpenLogStream keep sending logEvents to channel
 func (c *cloudWatchLogs) OpenLogStream(ctx context.Context, logGroupName, logStreamName string, interval time.Duration) (<-chan *cloudwatchlogs.OutputLogEvent, <-chan error) {
 	var logsCh = make(chan *cloudwatchlogs.OutputLogEvent, logStreamBuffer)
 	var errCh = make(chan error, 1)
@@ -147,4 +151,40 @@ func (c *cloudWatchLogs) OpenLogStream(ctx context.Context, logGroupName, logStr
 	go c.openLogStream(ctx, logsCh, errCh, input, ticker)
 
 	return logsCh, errCh
+}
+
+func (c *cloudWatchLogs) listLogGroupsInput() (*cloudwatchlogs.DescribeLogGroupsInput, error) {
+	return &cloudwatchlogs.DescribeLogGroupsInput{
+		Limit: aws.Int64(describeLogGroupsLimit),
+	}, nil
+}
+
+func (c *cloudWatchLogs) listLogGroupsOutput(input *cloudwatchlogs.DescribeLogGroupsInput) ([]string, error) {
+	if input == nil {
+		return nil, LogicErr
+	}
+
+	var groups []string
+	for {
+		output, err := c.client.DescribeLogGroups(input)
+		if err != nil {
+			return nil, err
+		}
+		for _, g := range output.LogGroups {
+			groups = append(groups, aws.StringValue(g.LogGroupName))
+		}
+		if output.NextToken == nil {
+			break
+		}
+		input.NextToken = output.NextToken
+	}
+	return groups, nil
+}
+
+func (c *cloudWatchLogs) ListLogGroups() ([]string, error) {
+	input, err := c.listLogGroupsInput()
+	if err != nil {
+		return nil, err
+	}
+	return c.listLogGroupsOutput(input)
 }

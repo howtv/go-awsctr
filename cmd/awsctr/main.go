@@ -12,6 +12,7 @@ func main() {
 	c.Args = os.Args[1:]
 	c.Commands = map[string]cli.CommandFactory{
 		"logs watch": logsWatchCommandFactory,
+		"logs list":  logsListCommandFactory,
 	}
 
 	exitStatus, err := c.Run()

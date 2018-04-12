@@ -40,10 +40,8 @@ type logsWatchCommand struct {
 
 func (c *logsWatchCommand) Help() string {
 	b := new(bytes.Buffer)
-	b.WriteString("awsctr logs watch <logs-gorup> [options]\n")
-	c.fs.SetOutput(b)
-	c.fs.PrintDefaults()
-	return b.String()
+	line := "awsctr logs watch <logs-group> [options]"
+	return HelpMsg(b, line, c.fs)
 }
 
 func (c *logsWatchCommand) Synopsis() string {
