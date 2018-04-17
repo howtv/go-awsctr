@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/howtv/go-awsctr/awsctr"
+	awsctr "github.com/howtv/go-awsctr"
 	"github.com/juju/errors"
 	"github.com/mitchellh/cli"
 )
@@ -62,10 +62,8 @@ func (c *logsListCommand) run(logGroupName string) error {
 }
 
 func (c *logsListCommand) listLogGroups() error {
-	client, err := awsctr.NewCloudWatchLogs(c.Config.Region)
-	if err != nil {
-		return err
-	}
+	sess := awsctr.NewSession(c.Config.Region)
+	client := awsctr.NewCloudWatchLogs(sess)
 
 	groups, err := client.ListLogGroups()
 	if err != nil {
