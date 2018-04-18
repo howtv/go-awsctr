@@ -5,10 +5,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/ecs"
 )
 
-const (
-	instanceStatus = "ACTIVE"
-)
-
 // ECS -
 type ECS interface {
 	GetContainerInstances(clusterName string) (instances *ecs.ListContainerInstancesOutput, err error)
@@ -32,7 +28,7 @@ type ecsImpl struct {
 }
 
 func (c *ecsImpl) GetContainerInstances(clusterName string) (instances *ecs.ListContainerInstancesOutput, err error) {
-	stat := instanceStatus
+	stat := containerInstanceStatus
 	instances, err = c.client.ListContainerInstances(&ecs.ListContainerInstancesInput{
 		Cluster: &clusterName,
 		Status:  &stat,

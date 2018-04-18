@@ -9,15 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 )
 
-const (
-	logStreamOrderEventTime  = "LastEventTime"
-	logStreamOrderStreamName = "logStreamName"
-
-	getLogEventsLimit      = 10000
-	describeLogGroupsLimit = 50
-	logStreamBuffer        = 100
-)
-
 // CloudWatchLogs -
 type CloudWatchLogs interface {
 	FetchLatestStream(logGroupName string) (*cloudwatchlogs.LogStream, error)
