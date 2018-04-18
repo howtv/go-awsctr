@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/howtv/go-awsctr/awsctr"
+	awsctr "github.com/howtv/go-awsctr"
 	"github.com/juju/errors"
 	"github.com/k0kubun/pp"
 	"github.com/mitchellh/cli"
@@ -100,10 +100,8 @@ func (c *logsWatchCommand) filterp(msg string) bool {
 }
 
 func (c *logsWatchCommand) run(logGroupName string) error {
-	client, err := awsctr.NewCloudWatchLogs(c.Config.Region)
-	if err != nil {
-		return err
-	}
+	sess := awsctr.NewSession(c.Config.Region)
+	client := awsctr.NewCloudWatchLogs(sess)
 
 	stream, err := client.FetchLatestStream(logGroupName)
 	if err != nil {
