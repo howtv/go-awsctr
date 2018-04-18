@@ -5,17 +5,8 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"github.com/juju/errors"
-)
-
-const (
-	logStreamOrderEventTime  = "LastEventTime"
-	logStreamOrderStreamName = "logStreamName"
-
-	getLogEventsLimit      = 10000
-	describeLogGroupsLimit = 50
-	logStreamBuffer        = 100
 )
 
 // CloudWatchLogs -
@@ -26,14 +17,10 @@ type CloudWatchLogs interface {
 }
 
 // NewCloudWatchLogs -
-func NewCloudWatchLogs(region string) (CloudWatchLogs, error) {
-	sess, err := NewSession(region)
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
+func NewCloudWatchLogs(sess *session.Session) CloudWatchLogs {
 	return &cloudWatchLogs{
 		client: cloudwatchlogs.New(sess),
-	}, nil
+	}
 }
 
 type cloudWatchLogsService interface {
