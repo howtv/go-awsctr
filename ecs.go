@@ -5,6 +5,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/ecs"
 )
 
+// ECSListContainerInstancesOutput -
+type ECSListContainerInstancesOutput = ecs.ListContainerInstancesOutput
+
+// ECSDescribeContainerInstancesOutput -
+type ECSDescribeContainerInstancesOutput = ecs.DescribeContainerInstancesOutput
+
 // ECS -
 type ECS interface {
 	GetContainerInstances(clusterName string) (instances *ecs.ListContainerInstancesOutput, err error)
