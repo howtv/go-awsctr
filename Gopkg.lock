@@ -10,7 +10,7 @@
   revision = "1fca145dffbcaa8fe914309b1ec0cfc67500fe61"
 
 [[projects]]
-  digest = "1:f2e2ee88002f421ca77ada41cc19c8a864b3c7afa0dafd27a696bf6b92eefc48"
+  digest = "1:71b928118dc3168608c145b8a0030468b0e7aeb687ab09e3c77ada7fe3ec6c12"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -38,7 +38,9 @@
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
+    "private/protocol/restxml",
     "private/protocol/xml/xmlutil",
+    "service/cloudfront",
     "service/cloudwatch",
     "service/cloudwatchlogs",
     "service/ecs",
@@ -171,6 +173,7 @@
   input-imports = [
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/service/cloudfront",
     "github.com/aws/aws-sdk-go/service/cloudwatch",
     "github.com/aws/aws-sdk-go/service/cloudwatchlogs",
     "github.com/aws/aws-sdk-go/service/ecs",
