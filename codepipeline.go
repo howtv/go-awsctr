@@ -1,6 +1,7 @@
 package awsctr
 
 import (
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/codepipeline"
 )
@@ -36,7 +37,6 @@ type codePipelineImpl struct {
 // cli sample:
 // aws codepipeline put-job-success-result --job-id e930bc23-49f3-442d-8189-8c33889a1791
 func (c *codePipelineImpl) SendJobSuccess(job JobInfo) error {
-
 	var input codepipeline.PutJobSuccessResultInput
 	input = *input.SetJobId(job.ID)
 	if err := input.Validate(); err != nil {
@@ -56,6 +56,10 @@ func (c *codePipelineImpl) SendJobFailure(job JobInfo) error {
 
 	var input codepipeline.PutJobFailureResultInput
 	input = *input.SetJobId(job.ID)
+	input = *input.SetFailureDetails(&codepipeline.FailureDetails{
+		Message: aws.String("failed job"),
+		Type:    aws.String(codepipeline.FailureTypeJobFailed),
+	})
 	if err := input.Validate(); err != nil {
 		return err
 	}
