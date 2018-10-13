@@ -7,8 +7,7 @@ import (
 
 // JobInfo -
 type JobInfo struct {
-	ID        string
-	IsSuccess bool
+	ID string
 }
 
 // CodePipeline -
