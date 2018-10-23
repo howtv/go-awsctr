@@ -15,9 +15,16 @@ type CountMetricsInfo struct {
 	Value          float64
 }
 
+// AlarmInfo -
+type AlarmInfo struct {
+	Name string
+}
+
 // CloudWatch -
 type CloudWatch interface {
 	PutCountMetrics(CountMetricsInfo) error
+	AlarmOn(AlarmInfo) error
+	AlarmOff(AlarmInfo) error
 }
 
 // NewCloudWatch -
@@ -29,6 +36,8 @@ func NewCloudWatch(sess *session.Session) CloudWatch {
 
 type cloudWatchService interface {
 	PutMetricData(input *cloudwatch.PutMetricDataInput) (*cloudwatch.PutMetricDataOutput, error)
+	EnableAlarmActions(input *cloudwatch.EnableAlarmActionsInput) (*cloudwatch.EnableAlarmActionsOutput, error)
+	DisableAlarmActions(input *cloudwatch.DisableAlarmActionsInput) (*cloudwatch.DisableAlarmActionsOutput, error)
 }
 
 type cloudWatchImpl struct {
@@ -54,6 +63,38 @@ func (c *cloudWatchImpl) PutCountMetrics(info CountMetricsInfo) error {
 			},
 		},
 		Namespace: aws.String(info.NameSpace),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AlarmOn -
+// cli sample:
+// aws cloudwatch enable-alarm-actions --alarm-names <value>
+func (c *cloudWatchImpl) AlarmOn(alarm AlarmInfo) error {
+	_, err := c.client.EnableAlarmActions(&cloudwatch.EnableAlarmActionsInput{
+		AlarmNames: []*string{
+			aws.String(alarm.Name),
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AlarmOff -
+// cli sample:
+// aws cloudwatch disable-alarm-actions --alarm-names <value>
+func (c *cloudWatchImpl) AlarmOff(alarm AlarmInfo) error {
+	_, err := c.client.DisableAlarmActions(&cloudwatch.DisableAlarmActionsInput{
+		AlarmNames: []*string{
+			aws.String(alarm.Name),
+		},
 	})
 	if err != nil {
 		return err
